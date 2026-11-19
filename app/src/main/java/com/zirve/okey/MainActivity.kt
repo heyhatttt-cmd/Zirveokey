@@ -19,10 +19,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-private val Gold = Color(0xFFFFD45C)
-private val DarkRed = Color(0xFF450509)
-private val Red = Color(0xFF9F1018)
-private val Panel = Color(0xFF651018)
+private val Gold = Color(0xFFFFD66B)
+private val Dark = Color(0xFF170927)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,73 +38,79 @@ fun ZirveLobby() {
     var selected by remember { mutableStateOf("") }
 
     val games = listOf(
-        Triple("🎴", "101 OKEY", "Taşlarını diz, zirveye çık"),
-        Triple("🃏", "BATAK", "Arkadaşlarınla yarış"),
-        Triple("🎲", "TAVLA", "Rakiplerini yen"),
-        Triple("🎰", "MİNİ OYUNLAR", "Eğlence seni bekliyor")
+        Triple("🎴", "101 OKEY", "Taşlarını diz"),
+        Triple("🃏", "BATAK", "Kartlarını dağıt"),
+        Triple("🎲", "TAVLA", "Zarını at"),
+        Triple("🎰", "SLOT OYUNLARI", "Eğlenceye katıl")
+    )
+
+    val colors = listOf(
+        listOf(Color(0xFFFF7B35), Color(0xFF8C174B)),
+        listOf(Color(0xFF3489D8), Color(0xFF30206E)),
+        listOf(Color(0xFF18A88A), Color(0xFF164C70)),
+        listOf(Color(0xFFB52DCA), Color(0xFF541078))
     )
 
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                Brush.verticalGradient(
+                Brush.linearGradient(
                     listOf(
-                        Color(0xFF270306),
-                        Color(0xFF8B1018),
-                        Color(0xFF350407)
+                        Color(0xFF170927),
+                        Color(0xFF681044),
+                        Color(0xFF32105B),
+                        Color(0xFF170927)
                     )
                 )
             )
     ) {
+        val compact = maxHeight < 400.dp
+
         Column(modifier = Modifier.fillMaxSize()) {
 
-            // ÜST BİLGİ VE MENÜ
+            // ÜST MENÜ
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(58.dp)
-                    .background(Color(0xFF57070B))
-                    .padding(horizontal = 8.dp),
+                    .height(if (compact) 52.dp else 62.dp)
+                    .background(Color(0xFF350A26))
+                    .padding(horizontal = 9.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("👑", fontSize = 27.sp)
-                Column(modifier = Modifier.padding(start = 5.dp)) {
+
+                Column {
                     Text(
-                        "ZİRVE",
+                        "ZİRVE OKEY",
                         color = Gold,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 17.sp
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.ExtraBold
                     )
-                    Text("VIP 0", color = Color.White, fontSize = 10.sp)
+                    Text("VIP 0", color = Color.White, fontSize = 9.sp)
                 }
 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(Modifier.weight(1f))
 
-                GoldButton("🪙 1.000 +") {
+                HeaderButton("🪙 1.000") {
                     selected = "Çip Mağazası"
                 }
 
-                Spacer(modifier = Modifier.width(6.dp))
-
-                GoldButton("MAĞAZA") {
+                HeaderButton("MAĞAZA") {
                     selected = "Mağaza"
                 }
 
-                Spacer(modifier = Modifier.width(6.dp))
-
-                GoldButton("PAKET 🎁") {
+                HeaderButton("🎁 PAKET") {
                     selected = "Paketler"
                 }
 
-                Spacer(modifier = Modifier.weight(1f))
+                Text("⭐ Lv.1", color = Gold, fontSize = 12.sp)
 
-                Text("⭐ Lv.1", color = Gold, fontWeight = FontWeight.Bold)
-                TopIcon("📬") { selected = "Posta Kutusu" }
-                TopIcon("⚙️") { selected = "Ayarlar" }
+                HeaderIcon("📬") { selected = "Posta Kutusu" }
+                HeaderIcon("⚙️") { selected = "Ayarlar" }
             }
 
-            // ORTA OYUN ALANI
+            // ORTA ALAN
             Row(
                 modifier = Modifier
                     .weight(1f)
@@ -115,31 +119,27 @@ fun ZirveLobby() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                // SOL MENÜ
+                // SOL KISA YOL
                 Column(
-                    modifier = Modifier
-                        .width(54.dp)
-                        .fillMaxHeight(),
+                    modifier = Modifier.width(48.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    listOf("🏠", "❤️", "🃏", "🎰", "💎").forEachIndexed { index, icon ->
-                        MenuIcon(icon) {
+                    listOf("🏠", "❤️", "👥", "💎").forEachIndexed { i, icon ->
+                        HeaderIcon(icon) {
                             selected = listOf(
                                 "Ana Sayfa",
                                 "Favoriler",
-                                "Kart Oyunları",
-                                "Mini Oyunlar",
+                                "Arkadaşlar",
                                 "VIP"
-                            )[index]
+                            )[i]
                         }
-                        Spacer(modifier = Modifier.height(7.dp))
                     }
                 }
 
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(Modifier.width(8.dp))
 
-                // OYUN KARTLARI
+                // RENKLİ OYUN KARTLARI
                 Row(
                     modifier = Modifier
                         .weight(1f)
@@ -147,11 +147,12 @@ fun ZirveLobby() {
                     horizontalArrangement = Arrangement.spacedBy(9.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    games.forEach { game ->
-                        GamePoster(
+                    games.forEachIndexed { index, game ->
+                        GameTile(
                             emoji = game.first,
                             title = game.second,
-                            description = game.third,
+                            subtitle = game.third,
+                            tileColors = colors[index],
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight()
@@ -166,31 +167,31 @@ fun ZirveLobby() {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(66.dp)
-                    .background(Color(0xFF50070A))
-                    .padding(horizontal = 5.dp),
+                    .height(if (compact) 59.dp else 70.dp)
+                    .background(Color(0xFF300A2D))
+                    .padding(horizontal = 4.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                BottomItem("🪙", "ÜCRETSİZ\nÇİP") {
+                BottomButton("🪙", "ÜCRETSİZ ÇİP") {
                     selected = "Ücretsiz Çip"
                 }
-                BottomItem("📋", "GÖREVLER") {
+                BottomButton("📋", "GÖREVLER") {
                     selected = "Görevler"
                 }
-                BottomItem("🎁", "GÜNLÜK\nGİRİŞ") {
+                BottomButton("🎁", "GÜNLÜK GİRİŞ") {
                     selected = "Günlük Giriş"
                 }
-                BottomItem("👥", "ARKADAŞLAR") {
+                BottomButton("👥", "ARKADAŞLAR") {
                     selected = "Arkadaşlar"
                 }
-                BottomItem("🎁", "HEDİYELER") {
+                BottomButton("💝", "HEDİYELER") {
                     selected = "Hediyeler"
                 }
-                BottomItem("🏆", "SIRALAMA") {
+                BottomButton("🏆", "SIRALAMA") {
                     selected = "Sıralama"
                 }
-                BottomItem("💬", "SOHBET") {
+                BottomButton("💬", "SOHBET") {
                     selected = "Sohbet"
                 }
             }
@@ -200,13 +201,13 @@ fun ZirveLobby() {
     if (selected.isNotEmpty()) {
         AlertDialog(
             onDismissRequest = { selected = "" },
-            containerColor = DarkRed,
+            containerColor = Dark,
             title = {
                 Text(selected, color = Gold)
             },
             text = {
                 Text(
-                    "Bu bölümü sıradaki geliştirmelerimizde çalışır hale getireceğiz.",
+                    "Bu bölümü sonraki geliştirmelerimizde açacağız.",
                     color = Color.White
                 )
             },
@@ -220,147 +221,136 @@ fun ZirveLobby() {
 }
 
 @Composable
-fun GoldButton(text: String, onClick: () -> Unit) {
+fun HeaderButton(
+    text: String,
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
+            .padding(horizontal = 3.dp)
             .background(
                 Brush.verticalGradient(
-                    listOf(Color(0xFFFFE58A), Color(0xFFB87808))
+                    listOf(Color(0xFFFFE68A), Color(0xFFB56A12))
                 ),
-                RoundedCornerShape(10.dp)
+                RoundedCornerShape(9.dp)
             )
             .clickable { onClick() }
-            .padding(horizontal = 9.dp, vertical = 9.dp),
-        contentAlignment = Alignment.Center
+            .padding(horizontal = 8.dp, vertical = 8.dp)
     ) {
         Text(
             text,
-            color = Color(0xFF541000),
-            fontSize = 11.sp,
+            color = Color(0xFF42102A),
+            fontSize = 10.sp,
             fontWeight = FontWeight.ExtraBold
         )
     }
 }
 
 @Composable
-fun TopIcon(icon: String, onClick: () -> Unit) {
+fun HeaderIcon(
+    icon: String,
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
+            .padding(3.dp)
             .size(39.dp)
+            .background(Color(0xFF671B43), RoundedCornerShape(10.dp))
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
-        Text(icon, fontSize = 23.sp)
+        Text(icon, fontSize = 22.sp)
     }
 }
 
 @Composable
-fun MenuIcon(icon: String, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(47.dp)
-            .background(
-                Brush.verticalGradient(
-                    listOf(Color(0xFFB52B23), Color(0xFF500509))
-                ),
-                RoundedCornerShape(9.dp)
-            )
-            .clickable { onClick() },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(icon, fontSize = 24.sp)
-    }
-}
-
-@Composable
-fun GamePoster(
+fun GameTile(
     emoji: String,
     title: String,
-    description: String,
+    subtitle: String,
+    tileColors: List<Color>,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     Card(
         modifier = modifier.clickable { onClick() },
-        shape = RoundedCornerShape(15.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Panel
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 7.dp)
+        shape = RoundedCornerShape(17.dp),
+        elevation = CardDefaults.cardElevation(8.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    Brush.verticalGradient(
-                        listOf(
-                            Color(0xFFB52A24),
-                            Color(0xFF650A10),
-                            Color(0xFF300407)
-                        )
-                    )
+                    Brush.verticalGradient(tileColors)
                 )
-                .padding(5.dp),
+                .padding(7.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(emoji, fontSize = 34.sp)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .background(
+                        Color.White.copy(alpha = 0.12f),
+                        RoundedCornerShape(13.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(emoji, fontSize = 48.sp)
+            }
 
-            Spacer(modifier = Modifier.height(9.dp))
+            Spacer(Modifier.height(7.dp))
 
             Text(
                 title,
                 color = Gold,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 14.sp,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(7.dp))
-
             Text(
-                description,
+                subtitle,
                 color = Color.White,
                 fontSize = 10.sp,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
 
             Text(
                 "OYNA  ›",
-                color = Color(0xFF5A1000),
+                color = Color(0xFF39102B),
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 12.sp,
+                fontSize = 11.sp,
                 modifier = Modifier
-                    .background(Gold, RoundedCornerShape(8.dp))
-                    .padding(horizontal = 12.dp, vertical = 7.dp)
+                    .background(Gold, RoundedCornerShape(9.dp))
+                    .padding(horizontal = 13.dp, vertical = 6.dp)
             )
         }
     }
 }
 
 @Composable
-fun BottomItem(
-    emoji: String,
+fun BottomButton(
+    icon: String,
     label: String,
     onClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .clickable { onClick() }
-            .padding(horizontal = 3.dp, vertical = 5.dp),
+            .padding(horizontal = 3.dp, vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(emoji, fontSize = 22.sp)
+        Text(icon, fontSize = 22.sp)
         Text(
             label,
             color = Gold,
             fontSize = 8.sp,
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            lineHeight = 10.sp
+            textAlign = TextAlign.Center
         )
     }
 }
