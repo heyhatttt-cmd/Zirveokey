@@ -64,10 +64,11 @@ fun ZirveLobby() {
         val compact = maxHeight < 400.dp
 
         // SAHİL ARKA PLANI
-        Box(
-    modifier = Modifier
-        .fillMaxSize()
-        .background(Color(0xFF170927))
+Image(
+    painter = painterResource(id = R.drawable.sahil),
+    contentDescription = "Zirve Okey sahil arka planı",
+    modifier = Modifier.fillMaxSize(),
+    contentScale = ContentScale.Crop
 )
 
         // YAZILARIN OKUNMASI İÇİN HAFİF KARARTMA
