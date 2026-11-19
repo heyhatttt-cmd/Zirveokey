@@ -65,8 +65,10 @@ fun ZirveLobby() {
 
         // SAHİL ARKA PLANI
 Image(
-    painter = painterResource(id = R.drawable.sahil),
-    contentDescription = "Zirve Okey sahil arka planı",
+    painter = painterResource(
+        id = R.drawable.file_00000000376c82438d5b4ea285e34559
+    ),
+    contentDescription = "Zirve Okey sahil",
     modifier = Modifier.fillMaxSize(),
     contentScale = ContentScale.Crop
 )
