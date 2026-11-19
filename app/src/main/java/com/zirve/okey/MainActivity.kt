@@ -1,12 +1,15 @@
-
 package com.zirve.okey
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -51,21 +56,27 @@ fun ZirveLobby() {
         listOf(Color(0xFFB52DCA), Color(0xFF541078))
     )
 
+    val pagerState = rememberPagerState(pageCount = { games.size })
+
     BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.linearGradient(
-                    listOf(
-                        Color(0xFF170927),
-                        Color(0xFF681044),
-                        Color(0xFF32105B),
-                        Color(0xFF170927)
-                    )
-                )
-            )
+        modifier = Modifier.fillMaxSize()
     ) {
         val compact = maxHeight < 400.dp
+
+        // SAHİL ARKA PLANI
+        Image(
+            painter = painterResource(id = R.drawable.sahil),
+            contentDescription = "Zirve Okey sahil arka planı",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        // YAZILARIN OKUNMASI İÇİN HAFİF KARARTMA
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.38f))
+        )
 
         Column(modifier = Modifier.fillMaxSize()) {
 
@@ -74,7 +85,7 @@ fun ZirveLobby() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(if (compact) 52.dp else 62.dp)
-                    .background(Color(0xFF350A26))
+                    .background(Color(0xCC350A26))
                     .padding(horizontal = 9.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -139,26 +150,29 @@ fun ZirveLobby() {
 
                 Spacer(Modifier.width(8.dp))
 
-                // RENKLİ OYUN KARTLARI
-                Row(
+                // KAYDIRILABİLİR OYUN KARTLARI
+                HorizontalPager(
+                    state = pagerState,
+                    pageSize = PageSize.Fixed(230.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp),
+                    pageSpacing = 12.dp,
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight(),
-                    horizontalArrangement = Arrangement.spacedBy(9.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    games.forEachIndexed { index, game ->
-                        GameTile(
-                            emoji = game.first,
-                            title = game.second,
-                            subtitle = game.third,
-                            tileColors = colors[index],
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight()
-                        ) {
-                            selected = game.second
-                        }
+                        .fillMaxHeight()
+                ) { page ->
+                    val game = games[page]
+
+                    GameTile(
+                        emoji = game.first,
+                        title = game.second,
+                        subtitle = game.third,
+                        tileColors = colors[page],
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(0.86f)
+                    ) {
+                        selected = game.second
                     }
                 }
             }
@@ -168,7 +182,7 @@ fun ZirveLobby() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(if (compact) 59.dp else 70.dp)
-                    .background(Color(0xFF300A2D))
+                    .background(Color(0xCC300A2D))
                     .padding(horizontal = 4.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
@@ -255,7 +269,7 @@ fun HeaderIcon(
         modifier = Modifier
             .padding(3.dp)
             .size(39.dp)
-            .background(Color(0xFF671B43), RoundedCornerShape(10.dp))
+            .background(Color(0xCC671B43), RoundedCornerShape(10.dp))
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
@@ -280,9 +294,7 @@ fun GameTile(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(tileColors)
-                )
+                .background(Brush.verticalGradient(tileColors))
                 .padding(7.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
