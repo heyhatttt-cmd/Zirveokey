@@ -7,9 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,165 +19,200 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-private val DarkBlue = Color(0xFF101A35)
-private val Gold = Color(0xFFFFD166)
-private val CardBlue = Color(0xFF1D2B50)
+private val Gold = Color(0xFFFFD45C)
+private val DarkRed = Color(0xFF450509)
+private val Red = Color(0xFF9F1018)
+private val Panel = Color(0xFF651018)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                ZirveOkeyApp()
+                ZirveLobby()
             }
         }
     }
 }
 
 @Composable
-fun ZirveOkeyApp() {
-    var selectedGame by remember { mutableStateOf("") }
+fun ZirveLobby() {
+    var selected by remember { mutableStateOf("") }
 
     val games = listOf(
-        "🎴" to "101 Okey",
-        "🃏" to "Batak",
-        "🎲" to "Tavla",
-        "🎰" to "Mini Oyunlar"
+        Triple("🎴", "101 OKEY", "Taşlarını diz, zirveye çık"),
+        Triple("🃏", "BATAK", "Arkadaşlarınla yarış"),
+        Triple("🎲", "TAVLA", "Rakiplerini yen"),
+        Triple("🎰", "MİNİ OYUNLAR", "Eğlence seni bekliyor")
     )
 
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    listOf(DarkBlue, Color(0xFF263D68))
+                    listOf(
+                        Color(0xFF270306),
+                        Color(0xFF8B1018),
+                        Color(0xFF350407)
+                    )
                 )
             )
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(18.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.height(18.dp))
+        Column(modifier = Modifier.fillMaxSize()) {
 
-            Text(
-                text = "ZİRVE OKEY",
-                color = Gold,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.ExtraBold
-            )
-
-            Text(
-                text = "Eğlencenin zirvesine hoş geldin!",
-                color = Color.White,
-                fontSize = 14.sp
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = CardBlue
-                ),
-                shape = RoundedCornerShape(18.dp)
+            // ÜST BİLGİ VE MENÜ
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(58.dp)
+                    .background(Color(0xFF57070B))
+                    .padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(modifier = Modifier.padding(18.dp)) {
+                Text("👑", fontSize = 27.sp)
+                Column(modifier = Modifier.padding(start = 5.dp)) {
                     Text(
-                        text = "👤 Oyuncu Profili",
-                        color = Color.White,
-                        fontSize = 19.sp,
-                        fontWeight = FontWeight.Bold
+                        "ZİRVE",
+                        color = Gold,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 17.sp
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Misafir Oyuncu",
-                        color = Gold
-                    )
-                    Text(
-                        text = "🪙 1.000 Ücretsiz Çip",
-                        color = Color.White,
-                        fontSize = 16.sp
-                    )
+                    Text("VIP 0", color = Color.White, fontSize = 10.sp)
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                GoldButton("🪙 1.000 +") {
+                    selected = "Çip Mağazası"
+                }
+
+                Spacer(modifier = Modifier.width(6.dp))
+
+                GoldButton("MAĞAZA") {
+                    selected = "Mağaza"
+                }
+
+                Spacer(modifier = Modifier.width(6.dp))
+
+                GoldButton("PAKET 🎁") {
+                    selected = "Paketler"
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Text("⭐ Lv.1", color = Gold, fontWeight = FontWeight.Bold)
+                TopIcon("📬") { selected = "Posta Kutusu" }
+                TopIcon("⚙️") { selected = "Ayarlar" }
+            }
+
+            // ORTA OYUN ALANI
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                // SOL MENÜ
+                Column(
+                    modifier = Modifier
+                        .width(54.dp)
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    listOf("🏠", "❤️", "🃏", "🎰", "💎").forEachIndexed { index, icon ->
+                        MenuIcon(icon) {
+                            selected = listOf(
+                                "Ana Sayfa",
+                                "Favoriler",
+                                "Kart Oyunları",
+                                "Mini Oyunlar",
+                                "VIP"
+                            )[index]
+                        }
+                        Spacer(modifier = Modifier.height(7.dp))
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // OYUN KARTLARI
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    horizontalArrangement = Arrangement.spacedBy(9.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    games.forEach { game ->
+                        GamePoster(
+                            emoji = game.first,
+                            title = game.second,
+                            description = game.third,
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                        ) {
+                            selected = game.second
+                        }
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(22.dp))
-
-            Text(
-                text = "OYUNLAR",
-                color = Gold,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            games.forEach { game ->
-                GameCard(
-                    emoji = game.first,
-                    name = game.second,
-                    onClick = { selectedGame = game.second }
-                )
-                Spacer(modifier = Modifier.height(10.dp))
+            // ALT MENÜ
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(66.dp)
+                    .background(Color(0xFF50070A))
+                    .padding(horizontal = 5.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                BottomItem("🪙", "ÜCRETSİZ\nÇİP") {
+                    selected = "Ücretsiz Çip"
+                }
+                BottomItem("📋", "GÖREVLER") {
+                    selected = "Görevler"
+                }
+                BottomItem("🎁", "GÜNLÜK\nGİRİŞ") {
+                    selected = "Günlük Giriş"
+                }
+                BottomItem("👥", "ARKADAŞLAR") {
+                    selected = "Arkadaşlar"
+                }
+                BottomItem("🎁", "HEDİYELER") {
+                    selected = "Hediyeler"
+                }
+                BottomItem("🏆", "SIRALAMA") {
+                    selected = "Sıralama"
+                }
+                BottomItem("💬", "SOHBET") {
+                    selected = "Sohbet"
+                }
             }
-
-            Spacer(modifier = Modifier.height(18.dp))
-
-            Text(
-                text = "SOSYAL ALAN",
-                color = Gold,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            val socialItems = listOf(
-                "👥 Arkadaşlar",
-                "🎁 Hediyeler",
-                "📬 Posta Kutusu",
-                "💬 Sohbet",
-                "🏆 Rozetler",
-                "👑 VIP Üyelik",
-                "🛍️ Çip Mağazası",
-                "⚙️ Ayarlar"
-            )
-
-            socialItems.forEach { item ->
-                GameCard(
-                    emoji = item.substringBefore(" "),
-                    name = item.substringAfter(" "),
-                    onClick = { selectedGame = item.substringAfter(" ") }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Text(
-                text = "ZİRVE OKEY • 1.0",
-                color = Color.LightGray,
-                fontSize = 12.sp
-            )
         }
     }
 
-    if (selectedGame.isNotEmpty()) {
+    if (selected.isNotEmpty()) {
         AlertDialog(
-            onDismissRequest = { selectedGame = "" },
+            onDismissRequest = { selected = "" },
+            containerColor = DarkRed,
             title = {
-                Text(selectedGame)
+                Text(selected, color = Gold)
             },
             text = {
-                Text("Bu bölümün özelliklerini birlikte geliştireceğiz.")
+                Text(
+                    "Bu bölümü sıradaki geliştirmelerimizde çalışır hale getireceğiz.",
+                    color = Color.White
+                )
             },
             confirmButton = {
-                TextButton(onClick = { selectedGame = "" }) {
-                    Text("Tamam")
+                TextButton(onClick = { selected = "" }) {
+                    Text("TAMAM", color = Gold)
                 }
             }
         )
@@ -187,48 +220,147 @@ fun ZirveOkeyApp() {
 }
 
 @Composable
-fun GameCard(
+fun GoldButton(text: String, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .background(
+                Brush.verticalGradient(
+                    listOf(Color(0xFFFFE58A), Color(0xFFB87808))
+                ),
+                RoundedCornerShape(10.dp)
+            )
+            .clickable { onClick() }
+            .padding(horizontal = 9.dp, vertical = 9.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text,
+            color = Color(0xFF541000),
+            fontSize = 11.sp,
+            fontWeight = FontWeight.ExtraBold
+        )
+    }
+}
+
+@Composable
+fun TopIcon(icon: String, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(39.dp)
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(icon, fontSize = 23.sp)
+    }
+}
+
+@Composable
+fun MenuIcon(icon: String, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(47.dp)
+            .background(
+                Brush.verticalGradient(
+                    listOf(Color(0xFFB52B23), Color(0xFF500509))
+                ),
+                RoundedCornerShape(9.dp)
+            )
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(icon, fontSize = 24.sp)
+    }
+}
+
+@Composable
+fun GamePoster(
     emoji: String,
-    name: String,
+    title: String,
+    description: String,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(66.dp)
-            .clickable(onClick = onClick),
+        modifier = modifier.clickable { onClick() },
+        shape = RoundedCornerShape(15.dp),
         colors = CardDefaults.cardColors(
-            containerColor = CardBlue
+            containerColor = Panel
         ),
-        shape = RoundedCornerShape(15.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 7.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 18.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color(0xFFB52A24),
+                            Color(0xFF650A10),
+                            Color(0xFF300407)
+                        )
+                    )
+                )
+                .padding(5.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = emoji,
-                fontSize = 25.sp
-            )
+            Text(emoji, fontSize = 34.sp)
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.height(9.dp))
 
             Text(
-                text = name,
-                color = Color.White,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Text(
-                text = "›",
+                title,
                 color = Gold,
-                fontSize = 30.sp
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(7.dp))
+
+            Text(
+                description,
+                color = Color.White,
+                fontSize = 10.sp,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                "OYNA  ›",
+                color = Color(0xFF5A1000),
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 12.sp,
+                modifier = Modifier
+                    .background(Gold, RoundedCornerShape(8.dp))
+                    .padding(horizontal = 12.dp, vertical = 7.dp)
             )
         }
+    }
+}
+
+@Composable
+fun BottomItem(
+    emoji: String,
+    label: String,
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .clickable { onClick() }
+            .padding(horizontal = 3.dp, vertical = 5.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(emoji, fontSize = 22.sp)
+        Text(
+            label,
+            color = Gold,
+            fontSize = 8.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            lineHeight = 10.sp
+        )
     }
 }
