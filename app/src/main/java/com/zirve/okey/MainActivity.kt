@@ -1,3 +1,4 @@
+
 package com.zirve.okey
 
 import android.os.Bundle
@@ -43,20 +44,15 @@ fun ZirveLobby() {
     var selected by remember { mutableStateOf("") }
 
     val games = listOf(
-        Triple("🎴", "101 OKEY", "Taşlarını diz"),
-        Triple("🃏", "BATAK", "Kartlarını dağıt"),
-        Triple("🎲", "TAVLA", "Zarını at"),
-        Triple("🎰", "SLOT OYUNLARI", "Eğlenceye katıl")
+        "101 OKEY" to R.drawable.okey101,
+        "BATAK" to R.drawable.batak,
+        "TAVLA" to R.drawable.tavla,
+        "SLOT OYUNLARI" to R.drawable.slot
     )
 
-    val colors = listOf(
-        listOf(Color(0xFFFF7B35), Color(0xFF8C174B)),
-        listOf(Color(0xFF3489D8), Color(0xFF30206E)),
-        listOf(Color(0xFF18A88A), Color(0xFF164C70)),
-        listOf(Color(0xFFB52DCA), Color(0xFF541078))
+    val pagerState = rememberPagerState(
+        pageCount = { games.size }
     )
-
-    val pagerState = rememberPagerState(pageCount = { games.size })
 
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize()
@@ -64,16 +60,16 @@ fun ZirveLobby() {
         val compact = maxHeight < 400.dp
 
         // SAHİL ARKA PLANI
-Image(
-    painter = painterResource(
-        id = R.drawable.file_00000000376c82438d5b4ea285e34559
-    ),
-    contentDescription = "Zirve Okey sahil",
-    modifier = Modifier.fillMaxSize(),
-    contentScale = ContentScale.Crop
-)
+        Image(
+            painter = painterResource(
+                id = R.drawable.file_00000000376c82438d5b4ea285e34559
+            ),
+            contentDescription = "Zirve Okey sahil",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
 
-        // YAZILARIN OKUNMASI İÇİN HAFİF KARARTMA
+        // HAFİF KARARTMA
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -119,8 +115,13 @@ Image(
 
                 Text("⭐ Lv.1", color = Gold, fontSize = 12.sp)
 
-                HeaderIcon("📬") { selected = "Posta Kutusu" }
-                HeaderIcon("⚙️") { selected = "Ayarlar" }
+                HeaderIcon("📬") {
+                    selected = "Posta Kutusu"
+                }
+
+                HeaderIcon("⚙️") {
+                    selected = "Ayarlar"
+                }
             }
 
             // ORTA ALAN
@@ -138,21 +139,23 @@ Image(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    listOf("🏠", "❤️", "👥", "💎").forEachIndexed { i, icon ->
-                        HeaderIcon(icon) {
-                            selected = listOf(
-                                "Ana Sayfa",
-                                "Favoriler",
-                                "Arkadaşlar",
-                                "VIP"
-                            )[i]
+                    listOf("🏠", "❤️", "👥", "💎")
+                        .forEachIndexed { i, icon ->
+
+                            HeaderIcon(icon) {
+                                selected = listOf(
+                                    "Ana Sayfa",
+                                    "Favoriler",
+                                    "Arkadaşlar",
+                                    "VIP"
+                                )[i]
+                            }
                         }
-                    }
                 }
 
                 Spacer(Modifier.width(8.dp))
 
-                // KAYDIRILABİLİR OYUN KARTLARI
+                // KAYDIRILABİLİR OYUN LOGOLARI
                 HorizontalPager(
                     state = pagerState,
                     pageSize = PageSize.Fixed(230.dp),
@@ -163,18 +166,26 @@ Image(
                         .weight(1f)
                         .fillMaxHeight()
                 ) { page ->
+
                     val game = games[page]
 
-                    GameTile(
-                        emoji = game.first,
-                        title = game.second,
-                        subtitle = game.third,
-                        tileColors = colors[page],
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(0.86f)
+                            .fillMaxHeight(0.86f),
+                        contentAlignment = Alignment.Center
                     ) {
-                        selected = game.second
+                        Image(
+                            painter = painterResource(id = game.second),
+                            contentDescription = game.first,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .clickable {
+                                    selected = game.first
+                                },
+                            contentScale = ContentScale.Fit
+                        )
                     }
                 }
             }
@@ -246,7 +257,10 @@ fun HeaderButton(
             .padding(horizontal = 3.dp)
             .background(
                 Brush.verticalGradient(
-                    listOf(Color(0xFFFFE68A), Color(0xFFB56A12))
+                    listOf(
+                        Color(0xFFFFE68A),
+                        Color(0xFFB56A12)
+                    )
                 ),
                 RoundedCornerShape(9.dp)
             )
@@ -271,78 +285,14 @@ fun HeaderIcon(
         modifier = Modifier
             .padding(3.dp)
             .size(39.dp)
-            .background(Color(0xCC671B43), RoundedCornerShape(10.dp))
+            .background(
+                Color(0xCC671B43),
+                RoundedCornerShape(10.dp)
+            )
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Text(icon, fontSize = 22.sp)
-    }
-}
-
-@Composable
-fun GameTile(
-    emoji: String,
-    title: String,
-    subtitle: String,
-    tileColors: List<Color>,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = modifier.clickable { onClick() },
-        shape = RoundedCornerShape(17.dp),
-        elevation = CardDefaults.cardElevation(8.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Brush.verticalGradient(tileColors))
-                .padding(7.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .background(
-                        Color.White.copy(alpha = 0.12f),
-                        RoundedCornerShape(13.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(emoji, fontSize = 48.sp)
-            }
-
-            Spacer(Modifier.height(7.dp))
-
-            Text(
-                title,
-                color = Gold,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.ExtraBold,
-                textAlign = TextAlign.Center
-            )
-
-            Text(
-                subtitle,
-                color = Color.White,
-                fontSize = 10.sp,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            Text(
-                "OYNA  ›",
-                color = Color(0xFF39102B),
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 11.sp,
-                modifier = Modifier
-                    .background(Gold, RoundedCornerShape(9.dp))
-                    .padding(horizontal = 13.dp, vertical = 6.dp)
-            )
-        }
     }
 }
 
@@ -359,6 +309,7 @@ fun BottomButton(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(icon, fontSize = 22.sp)
+
         Text(
             label,
             color = Gold,
