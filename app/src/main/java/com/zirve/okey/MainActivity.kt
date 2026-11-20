@@ -1,8 +1,6 @@
 package com.zirve.okey
 
 import android.os.Bundle
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -19,9 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -65,19 +62,21 @@ fun ZirveLobby() {
 
         // YENİ LÜKS SAHİL ARKA PLANI
         Image(
-            painter = androidx.compose.ui.res.painterResource(
+            painter = painterResource(
                 id = R.drawable.zirve_arka_plan
             ),
-            contentDescription = "Zirve Okey lüks sahil",
+            contentDescription = "Zirve Okey sahil",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
 
-        // ARKA PLAN KARARTMA
+        // HAFİF KARARTMA
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.32f))
+                .background(
+                    Color.Black.copy(alpha = 0.32f)
+                )
         )
 
         Column(
@@ -103,7 +102,6 @@ fun ZirveLobby() {
                         fontSize = 15.sp,
                         fontWeight = FontWeight.ExtraBold
                     )
-
                     Text(
                         "VIP 0",
                         color = Color.White,
@@ -172,7 +170,7 @@ fun ZirveLobby() {
 
                 Spacer(Modifier.width(5.dp))
 
-                // BÜYÜK KAYDIRILABİLİR OYUN LOGOLARI
+                // KAYDIRILABİLİR OYUN LOGOLARI
                 HorizontalPager(
                     state = pagerState,
                     pageSize = PageSize.Fixed(250.dp),
@@ -186,24 +184,19 @@ fun ZirveLobby() {
 
                     val game = games[page]
 
-                    Box(
+                    Image(
+                        painter = painterResource(
+                            id = game.second
+                        ),
+                        contentDescription = game.first,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(0.94f),
-                        contentAlignment = Alignment.Center
-                    ) {
-
-                        WhiteBackgroundLogo(
-                            resourceId = game.second,
-                            description = game.first,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight()
-                                .clickable {
-                                    selected = game.first
-                                }
-                        )
-                    }
+                            .fillMaxHeight(0.94f)
+                            .clickable {
+                                selected = game.first
+                            },
+                        contentScale = ContentScale.Fit
+                    )
                 }
             }
 
@@ -249,7 +242,6 @@ fun ZirveLobby() {
         }
     }
 
-    // MENÜ PENCERESİ
     if (selected.isNotEmpty()) {
 
         AlertDialog(
@@ -258,10 +250,7 @@ fun ZirveLobby() {
             },
             containerColor = Dark,
             title = {
-                Text(
-                    selected,
-                    color = Gold
-                )
+                Text(selected, color = Gold)
             },
             text = {
                 Text(
@@ -275,74 +264,13 @@ fun ZirveLobby() {
                         selected = ""
                     }
                 ) {
-                    Text(
-                        "TAMAM",
-                        color = Gold
-                    )
+                    Text("TAMAM", color = Gold)
                 }
             }
         )
     }
 }
 
-// BEYAZ ARKA PLANI ŞEFFAFLAŞTIRAN LOGO
-@Composable
-fun WhiteBackgroundLogo(
-    resourceId: Int,
-    description: String,
-    modifier: Modifier = Modifier
-) {
-
-    val context = LocalContext.current
-
-    val logo = remember(resourceId) {
-
-        val original = BitmapFactory.decodeResource(
-            context.resources,
-            resourceId
-        )
-
-        val bitmap = original.copy(
-            Bitmap.Config.ARGB_8888,
-            true
-        )
-
-        for (y in 0 until bitmap.height) {
-            for (x in 0 until bitmap.width) {
-
-                val pixel = bitmap.getPixel(x, y)
-
-                val red = android.graphics.Color.red(pixel)
-                val green = android.graphics.Color.green(pixel)
-                val blue = android.graphics.Color.blue(pixel)
-
-                // BEYAZA YAKIN PİKSELLERİ ŞEFFAF YAP
-                if (
-                    red > 242 &&
-                    green > 242 &&
-                    blue > 242
-                ) {
-                    bitmap.setPixel(
-                        x,
-                        y,
-                        android.graphics.Color.TRANSPARENT
-                    )
-                }
-            }
-        }
-
-        bitmap.asImageBitmap()
-    }
-
-    Image(
-        bitmap = logo,
-        contentDescription = description,
-        modifier = modifier,
-        contentScale = ContentScale.Fit
-    )
-}
-
-// ÜST MENÜ BUTONU
 @Composable
 fun HeaderButton(
     text: String,
@@ -379,7 +307,6 @@ fun HeaderButton(
     }
 }
 
-// ÜST VE SOL İKONLAR
 @Composable
 fun HeaderIcon(
     icon: String,
@@ -400,14 +327,10 @@ fun HeaderIcon(
         contentAlignment = Alignment.Center
     ) {
 
-        Text(
-            icon,
-            fontSize = 22.sp
-        )
+        Text(icon, fontSize = 22.sp)
     }
 }
 
-// ALT MENÜ BUTONLARI
 @Composable
 fun BottomButton(
     icon: String,
@@ -427,10 +350,7 @@ fun BottomButton(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text(
-            icon,
-            fontSize = 22.sp
-        )
+        Text(icon, fontSize = 22.sp)
 
         Text(
             label,
